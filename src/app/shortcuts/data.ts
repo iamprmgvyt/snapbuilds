@@ -16,7 +16,7 @@ export const shortcuts: Shortcut[] = [
   { id: '6', os: 'macOS', app: 'General', category: 'General', description: 'Copy selected item', keys: ['Cmd', 'C'] },
   { id: '7', os: 'macOS', app: 'General', category: 'General', description: 'Paste content', keys: ['Cmd', 'V'] },
   { id: '8', os: 'macOS', app: 'General', category: 'General', description: 'Cut selected item', keys: ['Cmd', 'X'] },
-  { id: '9', os: 'macOS', app: 'General', category: 'General', description: 'Undo action', keys: ['Cmd', 'Z'] },
+  { id: '9', os: 'macOS', app: 'General', 'category': 'General', description: 'Undo action', keys: ['Cmd', 'Z'] },
   { id: '10', os: 'macOS', app: 'General', category: 'Files', description: 'Save file', keys: ['Cmd', 'S'] },
   { id: '11', os: 'Linux', app: 'General', category: 'General', description: 'Copy selected item', keys: ['Ctrl', 'C'] },
   { id: '12', os: 'Linux', app: 'General', category: 'General', description: 'Paste content', keys: ['Ctrl', 'V'] },
@@ -31,7 +31,20 @@ export const shortcuts: Shortcut[] = [
   { id: '21', os: 'macOS', app: 'Chrome', category: 'Tabs', description: 'Close current tab', keys: ['Cmd', 'W'] },
   { id: '22', os: 'Windows', app: 'Firefox', category: 'Tabs', description: 'Reopen closed tab', keys: ['Ctrl', 'Shift', 'T'] },
   { id: '23', os: 'macOS', app: 'Firefox', category: 'Tabs', description: 'Reopen closed tab', keys: ['Cmd', 'Shift', 'T'] },
+  { id: '24', os: 'macOS', app: 'Figma', category: 'Tools', description: 'Move tool', keys: ['V'] },
+  { id: '25', os: 'Windows', app: 'Figma', category: 'Tools', description: 'Frame tool', keys: ['F'] },
+  { id: '26', os: 'macOS', app: 'Figma', category: 'Tools', description: 'Pen tool', keys: ['P'] },
+  { id: '27', os: 'Windows', app: 'Figma', category: 'Tools', description: 'Text tool', keys: ['T'] },
+  { id: '28', os: 'macOS', app: 'Figma', category: 'Zoom', description: 'Zoom in', keys: ['+'] },
+  { id: '29', os: 'Windows', app: 'Figma', category: 'Zoom', description: 'Zoom out', keys: ['-'] },
+  { id: '30', os: 'macOS', app: 'Figma', category: 'Grouping', description: 'Group selection', keys: ['Cmd', 'G'] },
+  { id: '31', os: 'Windows', app: 'Slack', category: 'Navigation', description: 'Jump to a conversation', keys: ['Ctrl', 'K'] },
+  { id: '32', os: 'macOS', app: 'Slack', category: 'Navigation', description: 'Jump to a conversation', keys: ['Cmd', 'K'] },
+  { id: '33', os: 'Windows', app: 'Slack', category: 'Messaging', description: 'Edit last message', keys: ['Up Arrow'] },
+  { id: '34', os: 'macOS', app: 'Slack', category: 'Messaging', description: 'Mark messages as unread', keys: ['Alt', 'Click'] },
+  { id: '35', os: 'Windows', app: 'Slack', category: 'General', description: 'Toggle full screen view', keys: ['F11'] },
+  { id: '36', os: 'macOS', app: 'Slack', category: 'General', description: 'Show all unreads', keys: ['Cmd', 'Shift', 'A'] },
 ];
 
 export const osOptions = ['All', 'Windows', 'macOS', 'Linux'];
-export const appOptions = ['All', 'General', 'VS Code', 'Chrome', 'Firefox'];
+export const appOptions = ['All', 'General', 'VS Code', 'Chrome', 'Firefox', 'Figma', 'Slack'];

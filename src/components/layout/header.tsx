@@ -7,6 +7,7 @@ import { Menu, Keyboard } from 'lucide-react';
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { ThemeToggle } from '../theme-toggle';
 
 const navLinks = [
   { href: '/shortcuts', label: 'Shortcuts' },
@@ -36,6 +37,7 @@ export function Header() {
           ))}
         </nav>
         <div className="flex flex-1 items-center justify-end space-x-4">
+          <ThemeToggle />
           <nav className="hidden items-center space-x-2 md:flex">
             <Button asChild variant="ghost">
               <Link href="/login">Log In</Link>
