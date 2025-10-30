@@ -11,7 +11,6 @@ import { ThemeToggle } from '../theme-toggle';
 
 const navLinks = [
   { href: '/shortcuts', label: 'Shortcuts' },
-  { href: '/learn', label: 'Learn' },
   { href: '/recommend', label: 'PC Recommender' },
 ];
 

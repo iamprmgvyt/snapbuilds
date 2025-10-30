@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ArrowRight, BookOpen, Bot, Keyboard as KeyboardIcon } from 'lucide-react';
+import { ArrowRight, Bot, Keyboard as KeyboardIcon } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const features = [
@@ -12,13 +12,6 @@ const features = [
     description: 'Explore a vast, searchable database of keyboard shortcuts for any app or OS.',
     link: '/shortcuts',
     image: PlaceHolderImages.find(p => p.id === 'shortcuts'),
-  },
-  {
-    icon: <BookOpen className="h-8 w-8 text-primary" />,
-    title: 'Learning Modules',
-    description: 'Master shortcuts with interactive lessons and quizzes designed for all skill levels.',
-    link: '/learn',
-    image: PlaceHolderImages.find(p => p.id === 'learn'),
   },
   {
     icon: <Bot className="h-8 w-8 text-primary" />,
@@ -87,12 +80,12 @@ export default function Home() {
               </p>
             </div>
           </div>
-          <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-2 md:gap-12 lg:max-w-none lg:grid-cols-3 mt-12">
+          <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-1 md:gap-12 lg:max-w-none lg:grid-cols-2 mt-12">
             {features.map((feature) => (
               <Card key={feature.title} className="flex flex-col overflow-hidden h-full shadow-md hover:shadow-xl transition-shadow">
                 {feature.image &&
                   <div className="relative h-48 w-full">
-                    <Image src={feature.image.imageUrl} alt={feature.image.description} fill style={{ objectFit: 'cover' }} data-ai-hint={feature.image.imageHint} sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"/>
+                    <Image src={feature.image.imageUrl} alt={feature.image.description} fill style={{ objectFit: 'cover' }} data-ai-hint={feature.image.imageHint} sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"/>
                   </div>
                 }
                 <CardHeader>
