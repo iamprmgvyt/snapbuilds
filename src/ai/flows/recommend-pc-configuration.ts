@@ -8,7 +8,7 @@
  * - RecommendPCConfigurationOutput - The return type for the recommendPCConfiguration function.
  */
 
-import {ai, llama3} from '@/ai/genkit';
+import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const RecommendPCConfigurationInputSchema = z.object({
@@ -51,6 +51,51 @@ export async function recommendPCConfiguration(input: RecommendPCConfigurationIn
   return recommendPCConfigurationFlow(input);
 }
 
+const convertToUSDTool = ai.defineTool(
+  {
+    name: 'convertToUSD',
+    description: 'Converts a given amount from any currency to US dollars.',
+    inputSchema: z.object({
+      amount: z.string().describe('The amount of money to convert, including the currency symbol or code (e.g., "€1500", "1000 CAD").'),
+    }),
+    outputSchema: z.number().describe('The converted amount in US dollars.'),
+  },
+  async ({ amount }) => {
+    // This is a simplified conversion for demonstration.
+    // In a real application, you would use a currency conversion API.
+    const currencyRegex = /([€£¥])(\d+)|(\d+)\s*(USD|EUR|GBP|CAD|JPY|AUD)/i;
+    const match = amount.match(currencyRegex);
+    let value = parseFloat(amount.replace(/[^0-9.]/g, ''));
+    let currency = 'USD';
+
+    if (match) {
+        if (match[1]) { // symbol like €
+            const symbols: { [key: string]: string } = { '€': 'EUR', '£': 'GBP', '¥': 'JPY' };
+            currency = symbols[match[1]];
+            value = parseFloat(match[2]);
+        } else if (match[4]) { // code like CAD
+            currency = match[4].toUpperCase();
+            value = parseFloat(match[3]);
+        }
+    } else if (amount.includes('$')) {
+        currency = 'USD'; // Assume $ is USD if no other context
+    }
+
+    const conversionRates: { [key: string]: number } = {
+        'USD': 1,
+        'EUR': 1.08,
+        'GBP': 1.27,
+        'CAD': 0.73,
+        'JPY': 0.0064,
+        'AUD': 0.66,
+    };
+
+    const rate = conversionRates[currency] || 1;
+    return value * rate;
+  }
+);
+
+
 const recommendPCConfigurationFlow = ai.defineFlow(
   {
     name: 'recommendPCConfigurationFlow',
@@ -60,7 +105,10 @@ const recommendPCConfigurationFlow = ai.defineFlow(
   async (input) => {
     const {output} = await ai.generate({
       model: 'groq/llama-3.1-8b-instant',
+      tools: [convertToUSDTool],
       prompt: `You are an expert PC and laptop advisor. A user will provide their budget, intended usage, preferred form factor (desktop or laptop), and any specific requirements.
+
+  First, convert the user's budget to USD using the provided tool. All recommendations should be based on the USD budget.
 
   Based on this information, you will recommend the best PC or laptop configuration for their needs. Explain your reasoning for the recommendation.
 
@@ -68,6 +116,7 @@ const recommendPCConfigurationFlow = ai.defineFlow(
 
   If the recommendation is for a laptop, provide the name of the laptop as a string in the 'recommendation' field.
 
+  User Input:
   Budget: ${input.budget}
   Intended Usage: ${input.intendedUsage}
   Preferred Form Factor: ${input.preferredFormFactor}
