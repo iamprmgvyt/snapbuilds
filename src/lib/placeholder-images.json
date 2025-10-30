@@ -23,12 +23,6 @@
       "description": "Image for recommend feature card",
       "imageUrl": "https://images.unsplash.com/photo-1735963387629-7bc782f3bbbe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxjdXN0b20lMjBjb21wdXRlcnxlbnwwfHx8fDE3NjE4MzU0NTl8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "custom computer"
-    },
-    {
-      "id": "forum",
-      "description": "Image for forum feature card",
-      "imageUrl": "https://images.unsplash.com/photo-1511376979163-f804dff7ad7b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwZW9wbGUlMjB0YWxraW5nfGVufDB8fHx8MTc2MTc5MzQxNXww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "people talking"
     }
   ]
 }

@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ArrowRight, BookOpen, Bot, Keyboard as KeyboardIcon, MessageSquare } from 'lucide-react';
+import { ArrowRight, BookOpen, Bot, Keyboard as KeyboardIcon } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const features = [
@@ -26,13 +26,6 @@ const features = [
     description: 'Let our AI assistant help you build the perfect PC or laptop for your needs and budget.',
     link: '/recommend',
     image: PlaceHolderImages.find(p => p.id === 'recommend'),
-  },
-  {
-    icon: <MessageSquare className="h-8 w-8 text-primary" />,
-    title: 'Community Forum',
-    description: 'Connect with other users, share tips, and get answers to your questions.',
-    link: '/forum',
-    image: PlaceHolderImages.find(p => p.id === 'forum'),
   },
 ];
 
@@ -94,7 +87,7 @@ export default function Home() {
               </p>
             </div>
           </div>
-          <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-2 md:gap-12 lg:max-w-none lg:grid-cols-4 mt-12">
+          <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-2 md:gap-12 lg:max-w-none lg:grid-cols-3 mt-12">
             {features.map((feature) => (
               <Card key={feature.title} className="flex flex-col overflow-hidden h-full shadow-md hover:shadow-xl transition-shadow">
                 {feature.image &&

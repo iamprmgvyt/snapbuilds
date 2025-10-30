@@ -13,7 +13,6 @@ const navLinks = [
   { href: '/shortcuts', label: 'Shortcuts' },
   { href: '/learn', label: 'Learn' },
   { href: '/recommend', label: 'PC Recommender' },
-  { href: '/forum', label: 'Forum' },
 ];
 
 export function Header() {
