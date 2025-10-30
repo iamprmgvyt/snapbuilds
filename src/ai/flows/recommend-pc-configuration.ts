@@ -1,4 +1,3 @@
-// src/ai/flows/recommend-pc-configuration.ts
 'use server';
 
 /**
@@ -9,7 +8,7 @@
  * - RecommendPCConfigurationOutput - The return type for the recommendPCConfiguration function.
  */
 
-import {ai} from '@/ai/genkit';
+import {ai, llama3} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const RecommendPCConfigurationInputSchema = z.object({
@@ -17,7 +16,7 @@ const RecommendPCConfigurationInputSchema = z.object({
   intendedUsage: z
     .string()
     .describe(
-      'The intended usage of the PC or laptop (e.g., gaming, office work, video editing).'      
+      'The intended usage of the PC or laptop (e.g., gaming, office work, video editing).'
     ),
   preferredFormFactor: z
     .string()
@@ -26,7 +25,7 @@ const RecommendPCConfigurationInputSchema = z.object({
     .string()
     .optional()
     .describe(
-      'Are there any specific requirements or preferences you have (e.g., specific brand, screen size, operating system)?'      
+      'Are there any specific requirements or preferences you have (e.g., specific brand, screen size, operating system)?'
     ),
 });
 export type RecommendPCConfigurationInput = z.infer<typeof RecommendPCConfigurationInputSchema>;
@@ -52,11 +51,16 @@ export async function recommendPCConfiguration(input: RecommendPCConfigurationIn
   return recommendPCConfigurationFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'recommendPCConfigurationPrompt',
-  input: {schema: RecommendPCConfigurationInputSchema},
-  output: {schema: RecommendPCConfigurationOutputSchema},
-  prompt: `You are an expert PC and laptop advisor. A user will provide their budget, intended usage, preferred form factor (desktop or laptop), and any specific requirements.
+const recommendPCConfigurationFlow = ai.defineFlow(
+  {
+    name: 'recommendPCConfigurationFlow',
+    inputSchema: RecommendPCConfigurationInputSchema,
+    outputSchema: RecommendPCConfigurationOutputSchema,
+  },
+  async (input) => {
+    const {output} = await ai.generate({
+      model: 'groq/llama-3.1-8b-instant',
+      prompt: `You are an expert PC and laptop advisor. A user will provide their budget, intended usage, preferred form factor (desktop or laptop), and any specific requirements.
 
   Based on this information, you will recommend the best PC or laptop configuration for their needs. Explain your reasoning for the recommendation.
 
@@ -64,21 +68,18 @@ const prompt = ai.definePrompt({
 
   If the recommendation is for a laptop, provide the name of the laptop as a string in the 'recommendation' field.
 
-  Budget: {{{budget}}}
-  Intended Usage: {{{intendedUsage}}}
-  Preferred Form Factor: {{{preferredFormFactor}}}
-  Specific Requirements: {{{specificRequirements}}}
+  Budget: ${input.budget}
+  Intended Usage: ${input.intendedUsage}
+  Preferred Form Factor: ${input.preferredFormFactor}
+  Specific Requirements: ${input.specificRequirements || 'None'}
   `,
-});
-
-const recommendPCConfigurationFlow = ai.defineFlow(
-  {
-    name: 'recommendPCConfigurationFlow',
-    inputSchema: RecommendPCConfigurationInputSchema,
-    outputSchema: RecommendPCConfigurationOutputSchema,
-  },
-  async input => {
-    const {output} = await prompt(input);
+      output: {
+        schema: RecommendPCConfigurationOutputSchema,
+      },
+      config: {
+        temperature: 0.7,
+      },
+    });
     return output!;
   }
 );
