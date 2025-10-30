@@ -36,14 +36,6 @@ export function Header() {
         </nav>
         <div className="flex flex-1 items-center justify-end space-x-4">
           <ThemeToggle />
-          <nav className="hidden items-center space-x-2 md:flex">
-            <Button asChild variant="ghost">
-              <Link href="/login">Log In</Link>
-            </Button>
-            <Button asChild>
-              <Link href="/signup">Sign Up</Link>
-            </Button>
-          </nav>
           <div className="md:hidden">
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
@@ -67,14 +59,6 @@ export function Header() {
                       </Link>
                     ))}
                   </nav>
-                  <div className="mt-auto border-t pt-4 flex flex-col gap-2">
-                    <Button asChild variant="outline" className="w-full">
-                      <Link href="/login" onClick={() => setIsOpen(false)}>Log In</Link>
-                    </Button>
-                    <Button asChild className="w-full">
-                      <Link href="/signup" onClick={() => setIsOpen(false)}>Sign Up</Link>
-                    </Button>
-                  </div>
                 </div>
               </SheetContent>
             </Sheet>
