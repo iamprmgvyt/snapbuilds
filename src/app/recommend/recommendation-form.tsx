@@ -14,6 +14,8 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Sparkles } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+
 
 const formSchema = z.object({
   budget: z.string().min(2, 'Please enter a budget.'),
@@ -53,6 +55,47 @@ export function RecommendationForm() {
       setIsLoading(false);
     }
   }
+  
+  const renderRecommendation = () => {
+    if (!recommendation) return null;
+
+    if (typeof recommendation.recommendation === 'string') {
+      return (
+        <pre className="bg-muted p-4 rounded-md text-sm font-code overflow-x-auto">
+          <code>{recommendation.recommendation}</code>
+        </pre>
+      );
+    }
+
+    if (typeof recommendation.recommendation === 'object' && recommendation.recommendation !== null) {
+      const entries = Object.entries(recommendation.recommendation).filter(([_, value]) => value);
+      if (entries.length === 0) return null;
+
+      return (
+        <div className="overflow-hidden rounded-md border bg-muted">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-1/3">Component</TableHead>
+                <TableHead>Specification</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {entries.map(([key, value]) => (
+                <TableRow key={key}>
+                  <TableCell className="font-medium">{key}</TableCell>
+                  <TableCell>{value}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
 
   return (
     <div className="mt-8 space-y-8">
@@ -169,11 +212,7 @@ export function RecommendationForm() {
           <CardContent className="space-y-6">
             <div>
               <h3 className="font-semibold text-lg mb-2">Recommended Configuration</h3>
-              <pre className="bg-muted p-4 rounded-md text-sm font-code overflow-x-auto">
-                <code>
-                  {recommendation.recommendation}
-                </code>
-              </pre>
+              {renderRecommendation()}
             </div>
             <div>
               <h3 className="font-semibold text-lg mb-2">Reasoning</h3>
