@@ -13,6 +13,7 @@ import {z} from 'genkit';
 
 const RecommendPCConfigurationInputSchema = z.object({
   budget: z.string().describe('Your budget for the PC or laptop.'),
+  currency: z.string().describe('The currency of the budget.'),
   intendedUsage: z
     .string()
     .describe(
@@ -56,42 +57,26 @@ const convertToUSDTool = ai.defineTool(
     name: 'convertToUSD',
     description: 'Converts a given amount from any currency to US dollars.',
     inputSchema: z.object({
-      amount: z.string().describe('The amount of money to convert, including the currency symbol or code (e.g., "€1500", "1000 CAD").'),
+      amount: z.number().describe('The amount of money to convert.'),
+      currency: z.string().describe('The currency code (e.g., "EUR", "CAD").'),
     }),
     outputSchema: z.number().describe('The converted amount in US dollars.'),
   },
-  async ({ amount }) => {
-    // This is a simplified conversion for demonstration.
+  async ({ amount, currency }) => {
+    // This is a simplified conversion for demonstration with approximate rates.
     // In a real application, you would use a currency conversion API.
-    const currencyRegex = /([€£¥])(\d+)|(\d+)\s*(USD|EUR|GBP|CAD|JPY|AUD)/i;
-    const match = amount.match(currencyRegex);
-    let value = parseFloat(amount.replace(/[^0-9.]/g, ''));
-    let currency = 'USD';
-
-    if (match) {
-        if (match[1]) { // symbol like €
-            const symbols: { [key: string]: string } = { '€': 'EUR', '£': 'GBP', '¥': 'JPY' };
-            currency = symbols[match[1]];
-            value = parseFloat(match[2]);
-        } else if (match[4]) { // code like CAD
-            currency = match[4].toUpperCase();
-            value = parseFloat(match[3]);
-        }
-    } else if (amount.includes('$')) {
-        currency = 'USD'; // Assume $ is USD if no other context
-    }
-
     const conversionRates: { [key: string]: number } = {
-        'USD': 1,
-        'EUR': 1.08,
-        'GBP': 1.27,
-        'CAD': 0.73,
-        'JPY': 0.0064,
-        'AUD': 0.66,
+        'USD': 1, 'EUR': 1.08, 'JPY': 0.0063, 'GBP': 1.27, 'AUD': 0.66,
+        'CAD': 0.73, 'CHF': 1.11, 'CNY': 0.14, 'HKD': 0.13, 'NZD': 0.61,
+        'SEK': 0.095, 'KRW': 0.00072, 'SGD': 0.74, 'NOK': 0.094, 'MXN': 0.054,
+        'INR': 0.012, 'RUB': 0.011, 'ZAR': 0.053, 'TRY': 0.030, 'BRL': 0.18,
+        'TWD': 0.031, 'DKK': 0.14, 'PLN': 0.25, 'THB': 0.027, 'IDR': 0.000061,
+        'HUF': 0.0027, 'CZK': 0.043, 'ILS': 0.27, 'CLP': 0.0011, 'PHP': 0.017,
+        'AED': 0.27, 'COP': 0.00024, 'SAR': 0.27, 'MYR': 0.21, 'RON': 0.22,
     };
 
-    const rate = conversionRates[currency] || 1;
-    return value * rate;
+    const rate = conversionRates[currency.toUpperCase()] || 1;
+    return amount * rate;
   }
 );
 
@@ -117,7 +102,7 @@ const recommendPCConfigurationFlow = ai.defineFlow(
   If the recommendation is for a laptop, provide the name of the laptop as a string in the 'recommendation' field.
 
   User Input:
-  Budget: ${input.budget}
+  Budget: ${input.currency} ${input.budget}
   Intended Usage: ${input.intendedUsage}
   Preferred Form Factor: ${input.preferredFormFactor}
   Specific Requirements: ${input.specificRequirements || 'None'}

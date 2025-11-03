@@ -11,14 +11,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Sparkles } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { currencies } from './currencies';
 
 
 const formSchema = z.object({
-  budget: z.string().min(2, 'Please enter a budget.'),
+  budget: z.string().min(1, 'Please enter a budget.'),
+  currency: z.string({ required_error: 'Please select a currency.'}),
   intendedUsage: z.string().min(3, 'Please describe what you will use the PC for.'),
   preferredFormFactor: z.enum(['Desktop', 'Laptop'], { required_error: 'Please select a form factor.' }),
   specificRequirements: z.string().optional(),
@@ -33,6 +36,7 @@ export function RecommendationForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       budget: '',
+      currency: 'USD',
       intendedUsage: '',
       specificRequirements: '',
     },
@@ -107,19 +111,42 @@ export function RecommendationForm() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <FormField
-                control={form.control}
-                name="budget"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>What is your budget?</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., $1000, ~€1500" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <FormField
+                  control={form.control}
+                  name="budget"
+                  render={({ field }) => (
+                    <FormItem className="md:col-span-2">
+                      <FormLabel>What is your budget?</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g., 1000" type="number" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                 <FormField
+                  control={form.control}
+                  name="currency"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Currency</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select currency" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {currencies.map(c => <SelectItem key={c.code} value={c.code}>{c.code} - {c.name}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
               <FormField
                 control={form.control}
                 name="intendedUsage"
