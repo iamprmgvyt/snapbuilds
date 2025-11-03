@@ -22,6 +22,7 @@ const RecommendPCConfigurationInputSchema = z.object({
   preferredFormFactor: z
     .string()
     .describe('Do you prefer a desktop PC or a laptop?'),
+  buildTier: z.enum(['Basic', 'Advanced', 'Super High-End']).describe('The desired build quality tier.'),
   specificRequirements: z
     .string()
     .optional()
@@ -52,7 +53,7 @@ const LaptopDetailSchema = z.object({
 });
 
 const RecommendPCConfigurationOutputSchema = z.object({
-  recommendation: z.union([PCPartSchema, LaptopDetailSchema, z.string()]).describe('The recommended PC or laptop configuration. If a PC, it is a JSON object with parts. If a laptop, it can be an object with name and price, or a single string.'),
+  recommendation: z.union([PCPartSchema, LaptopDetailSchema]).describe('The recommended PC or laptop configuration. If a PC, it is a JSON object with parts. If a laptop, it is an object with name and price.'),
   reasoning: z.string().describe('The reasoning behind the recommendation.'),
   disclaimers: z.array(z.string()).describe("A list of disclaimers regarding pricing and component availability."),
 });
@@ -131,18 +132,23 @@ const recommendPCConfigurationFlow = ai.defineFlow(
     const {output} = await ai.generate({
       model: 'groq/llama-3.1-8b-instant',
       tools: [convertToUSDTool],
-      prompt: `You are an expert PC and laptop advisor. A user will provide their budget, intended usage, preferred form factor (desktop or laptop), and any specific requirements.
+      prompt: `You are an expert PC and laptop advisor. A user will provide their budget, intended usage, preferred form factor (desktop or laptop), build tier, and any specific requirements.
 
 Your response MUST be a JSON object with three keys: "recommendation", "reasoning", and "disclaimers".
 
-1.  First, convert the user's budget to USD to understand the price point. Let's say the result is X.
-2.  Based on this information, you will recommend the best PC or laptop configuration for their needs. You MUST build the PC for the right price based on the budget.
-3.  For each component (or the laptop), determine its price in USD.
-4.  Then, convert each component's USD price back to the user's original currency: ${input.currency}.
-5.  If the recommendation is for a desktop, the value of the "recommendation" key should be a JSON object where keys are the component name (e.g., "CPU", "GPU"). The value for each key should be an object with "name" and "price" (in ${input.currency}).
-6.  If the recommendation is for a laptop, the value of the "recommendation" key should be an object with "name" and "price" (in ${input.currency}).
-7.  The "reasoning" key should contain a string explaining your recommendation.
-8.  The "disclaimers" key should be an array of strings containing the following two sentences:
+1.  First, convert the user's budget to USD to understand the price point.
+2.  Based on this information, you will recommend the best PC or laptop configuration for their needs.
+3.  You MUST build the PC for the right price. The total price of all components MUST NOT exceed the user's budget.
+4.  The build tier will guide your component selection:
+    - Basic: Focus on essential components, using fewer expensive parts to meet the budget.
+    - Advanced: A balanced build with a mix of mid-range components.
+    - Super High-End: Prioritize performance with top-tier components, while still staying under budget.
+5.  For each component (or the laptop), determine its price in USD.
+6.  Then, convert each component's USD price back to the user's original currency: ${input.currency}.
+7.  If the recommendation is for a desktop, the value of the "recommendation" key should be a JSON object where keys are the component name (e.g., "CPU", "GPU"). The value for each key should be an object with "name" and "price" (in ${input.currency}).
+8.  If the recommendation is for a laptop, the value of the "recommendation" key should be an object with "name" and "price" (in ${input.currency}).
+9.  The "reasoning" key should contain a string explaining your recommendation.
+10. The "disclaimers" key should be an array of strings containing the following two sentences:
     - "The price of each component may be more expensive depending on the place of purchase and store"
     - "The components here are for reference only so the price may be expensive or not"
 
@@ -150,6 +156,7 @@ User Input:
 Budget: ${input.currency} ${input.budget}
 Intended Usage: ${input.intendedUsage}
 Preferred Form Factor: ${input.preferredFormFactor}
+Build Tier: ${input.buildTier}
 Specific Requirements: ${input.specificRequirements || 'None'}
 `,
       output: {

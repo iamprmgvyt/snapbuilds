@@ -26,6 +26,7 @@ const formSchema = z.object({
   currency: z.string({ required_error: 'Please select a currency.'}),
   intendedUsage: z.string().min(3, 'Please describe what you will use the PC for.'),
   preferredFormFactor: z.enum(['Desktop', 'Laptop'], { required_error: 'Please select a form factor.' }),
+  buildTier: z.enum(['Basic', 'Advanced', 'Super High-End'], { required_error: 'Please select a build tier.' }),
   specificRequirements: z.string().optional(),
 });
 
@@ -43,6 +44,7 @@ export function RecommendationForm() {
       budget: '',
       currency: 'USD',
       intendedUsage: '',
+      buildTier: 'Advanced',
       specificRequirements: '',
     },
   });
@@ -75,14 +77,6 @@ export function RecommendationForm() {
         currency: submittedCurrency,
       }).format(price);
     };
-
-    if (typeof recommendation.recommendation === 'string') {
-      return (
-        <pre className="bg-muted p-4 rounded-md text-sm font-code overflow-x-auto">
-          <code>{recommendation.recommendation}</code>
-        </pre>
-      );
-    }
     
     if (recommendation.recommendation && 'name' in recommendation.recommendation && recommendation.recommendation.name) {
        return (
@@ -105,8 +99,8 @@ export function RecommendationForm() {
        );
     }
 
-    if (typeof recommendation.recommendation === 'object' && recommendation.recommendation !== null) {
-      const entries = Object.entries(recommendation.recommendation).filter(([_, value]) => value?.name);
+    if (typeof recommendation.recommendation === 'object' && recommendation.recommendation !== null && !('name' in recommendation.recommendation)) {
+      const entries = Object.entries(recommendation.recommendation).filter(([_, value]) => value?.name && value?.price);
       if (entries.length === 0) return null;
 
       const totalCost = entries.reduce((sum, [, value]) => sum + (value?.price || 0), 0);
@@ -116,7 +110,8 @@ export function RecommendationForm() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-1/2">Component</TableHead>
+                <TableHead className="w-[150px]">Component</TableHead>
+                <TableHead>Name</TableHead>
                 <TableHead className="text-right">Estimated Price</TableHead>
               </TableRow>
             </TableHeader>
@@ -124,11 +119,12 @@ export function RecommendationForm() {
               {entries.map(([key, value]) => (
                 <TableRow key={key}>
                   <TableCell className="font-medium">{key}</TableCell>
-                  <TableCell className="text-right">{value?.name}</TableCell>
+                  <TableCell>{value?.name}</TableCell>
+                  <TableCell className="text-right">{formatPrice(value!.price)}</TableCell>
                 </TableRow>
               ))}
                <TableRow className="bg-card font-bold">
-                  <TableCell>Total Estimated Cost</TableCell>
+                  <TableCell colSpan={2}>Total Estimated Cost</TableCell>
                   <TableCell className="text-right">{formatPrice(totalCost)}</TableCell>
               </TableRow>
             </TableBody>
@@ -270,6 +266,44 @@ export function RecommendationForm() {
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="buildTier"
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <FormLabel>Select Build Tier</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="flex flex-col md:flex-row gap-4"
+                      >
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="Basic" />
+                          </FormControl>
+                          <FormLabel className="font-normal">Basic</FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="Advanced" />
+                          </FormControl>
+                          <FormLabel className="font-normal">Advanced</FormLabel>
+                        </FormItem>
+                         <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="Super High-End" />
+                          </FormControl>
+                          <FormLabel className="font-normal">Super High-End</FormLabel>
+                        </FormItem>
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 control={form.control}
                 name="specificRequirements"
