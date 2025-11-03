@@ -338,7 +338,7 @@ export function RecommendationForm() {
           <CardContent className="pt-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                <p className="text-muted-foreground font-medium">Our AI is analyzing your needs...</p>
+                <p className="text-muted-foreground font-medium">SB-AI is analyzing your needs...</p>
                 <p className="text-sm text-muted-foreground">This may take a moment.</p>
             </div>
           </CardContent>
@@ -348,7 +348,7 @@ export function RecommendationForm() {
       {recommendation && (
         <Card className="mt-8 border-primary border-2">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Sparkles className="text-primary"/> Your AI-Powered Recommendation</CardTitle>
+            <CardTitle className="flex items-center gap-2"><Sparkles className="text-primary"/> Your SB-AI Powered Recommendation</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div>

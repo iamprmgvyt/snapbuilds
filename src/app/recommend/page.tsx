@@ -8,7 +8,7 @@ export default function RecommendPage() {
           Find Your Perfect PC
         </h1>
         <p className="text-muted-foreground md:text-xl">
-          Answer a few questions and our AI will recommend the best computer configuration for your needs and budget.
+          Answer a few questions and our AI, SB-AI, will recommend the best computer configuration for your needs and budget. SB-AI is an intelligent assistant designed to help you find the perfect PC or laptop based on your specific requirements.
         </p>
       </div>
       <RecommendationForm />
