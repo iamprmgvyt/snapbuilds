@@ -8,7 +8,7 @@ import { recommendPCConfiguration, RecommendPCConfigurationInput, RecommendPCCon
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
@@ -29,12 +29,15 @@ const formSchema = z.object({
   specificRequirements: z.string().optional(),
 });
 
+type FormData = z.infer<typeof formSchema>;
+
 export function RecommendationForm() {
   const [recommendation, setRecommendation] = useState<RecommendPCConfigurationOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [submittedCurrency, setSubmittedCurrency] = useState('USD');
   const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       budget: '',
@@ -44,9 +47,10 @@ export function RecommendationForm() {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: FormData) {
     setIsLoading(true);
     setRecommendation(null);
+    setSubmittedCurrency(values.currency);
     try {
       const result = await recommendPCConfiguration(values as RecommendPCConfigurationInput);
       setRecommendation(result);
@@ -65,6 +69,13 @@ export function RecommendationForm() {
   const renderRecommendation = () => {
     if (!recommendation) return null;
 
+    const formatPrice = (price: number) => {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: submittedCurrency,
+      }).format(price);
+    };
+
     if (typeof recommendation.recommendation === 'string') {
       return (
         <pre className="bg-muted p-4 rounded-md text-sm font-code overflow-x-auto">
@@ -72,27 +83,54 @@ export function RecommendationForm() {
         </pre>
       );
     }
+    
+    if (recommendation.recommendation && 'name' in recommendation.recommendation && recommendation.recommendation.name) {
+       return (
+         <div className="overflow-hidden rounded-md border bg-muted">
+           <Table>
+             <TableHeader>
+               <TableRow>
+                 <TableHead>Laptop</TableHead>
+                 <TableHead className="text-right">Estimated Price</TableHead>
+               </TableRow>
+             </TableHeader>
+             <TableBody>
+               <TableRow>
+                 <TableCell className="font-medium">{recommendation.recommendation.name}</TableCell>
+                 <TableCell className="text-right font-medium">{formatPrice(recommendation.recommendation.price)}</TableCell>
+               </TableRow>
+             </TableBody>
+           </Table>
+         </div>
+       );
+    }
 
     if (typeof recommendation.recommendation === 'object' && recommendation.recommendation !== null) {
-      const entries = Object.entries(recommendation.recommendation).filter(([_, value]) => value);
+      const entries = Object.entries(recommendation.recommendation).filter(([_, value]) => value?.name);
       if (entries.length === 0) return null;
+
+      const totalCost = entries.reduce((sum, [, value]) => sum + (value?.price || 0), 0);
 
       return (
         <div className="overflow-hidden rounded-md border bg-muted">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-1/3">Component</TableHead>
-                <TableHead>Specification</TableHead>
+                <TableHead className="w-1/2">Component</TableHead>
+                <TableHead className="text-right">Estimated Price</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {entries.map(([key, value]) => (
                 <TableRow key={key}>
                   <TableCell className="font-medium">{key}</TableCell>
-                  <TableCell>{value}</TableCell>
+                  <TableCell className="text-right">{value?.name}</TableCell>
                 </TableRow>
               ))}
+               <TableRow className="bg-card font-bold">
+                  <TableCell>Total Estimated Cost</TableCell>
+                  <TableCell className="text-right">{formatPrice(totalCost)}</TableCell>
+              </TableRow>
             </TableBody>
           </Table>
         </div>
@@ -287,6 +325,16 @@ export function RecommendationForm() {
               <h3 className="font-semibold text-lg mb-2">Reasoning</h3>
               <p className="text-muted-foreground whitespace-pre-wrap">{recommendation.reasoning}</p>
             </div>
+             {recommendation.disclaimers && recommendation.disclaimers.length > 0 && (
+              <div>
+                <h3 className="font-semibold text-lg mb-2">Disclaimers</h3>
+                <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                  {recommendation.disclaimers.map((disclaimer, index) => (
+                    <li key={index}>{disclaimer}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </CardContent>
         </Card>
       )}
