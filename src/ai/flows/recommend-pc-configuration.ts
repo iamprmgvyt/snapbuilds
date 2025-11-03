@@ -74,7 +74,7 @@ const recommendPCConfigurationFlow = ai.defineFlow(
       model: 'groq/llama-3.1-8b-instant',
       prompt: `You are an expert PC and laptop advisor. A user will provide their budget, intended usage, preferred form factor (desktop or laptop), build tier, and any specific requirements.
 
-Your response MUST be a JSON object with three keys: "recommendation", "reasoning", and "disclaimers".
+Your response MUST be a JSON object with three keys: "recommendation", "reasoning", and "disclaimers". All three keys are mandatory.
 
 1.  Based on the user's input, recommend the best PC or laptop configuration for their needs.
 2.  You MUST build the PC for the right price. The total price of all components MUST NOT exceed the user's budget of ${input.currency} ${input.budget}.
@@ -83,10 +83,10 @@ Your response MUST be a JSON object with three keys: "recommendation", "reasonin
     - Advanced: A balanced build with a mix of mid-range components.
     - Super High-End: Prioritize performance with top-tier components, while still staying under budget.
 4.  For each component (or the laptop), determine its price in the user's original currency: ${input.currency}.
-5.  If the recommendation is for a desktop, the value of the "recommendation" key should be a JSON object where keys are the component name (e.g., "CPU", "GPU"). The value for each key should be an object with "name" and "price" (in ${input.currency}). All component values are optional.
+5.  If the recommendation is for a desktop, the value of the "recommendation" key must be a JSON object where keys are the component name (e.g., "CPU", "GPU"). The value for each key should be an object with "name" and "price" (in ${input.currency}). All component values are optional, but you should try to include them.
 6.  If the recommendation is for a laptop, the value of the "recommendation" key should be an object with "name" and "price" (in ${input.currency}).
-7.  The "reasoning" key should contain a string explaining your recommendation.
-8.  The "disclaimers" key should be an array of strings containing the following two sentences:
+7.  The "reasoning" key must contain a string explaining your recommendation. This is a mandatory field.
+8.  The "disclaimers" key must be an array of strings containing the following two sentences:
     - "The price of each component may be more expensive depending on the place of purchase and store"
     - "The components here are for reference only so the price may be expensive or not"
 

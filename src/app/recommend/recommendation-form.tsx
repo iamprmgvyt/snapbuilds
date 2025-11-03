@@ -100,7 +100,7 @@ export function RecommendationForm() {
     }
 
     if (typeof recommendation.recommendation === 'object' && recommendation.recommendation !== null && !('name' in recommendation.recommendation)) {
-      const entries = Object.entries(recommendation.recommendation).filter(([_, value]) => value?.name && value?.price);
+      const entries = Object.entries(recommendation.recommendation).filter(([, value]) => value?.name && value?.price);
       if (entries.length === 0) return null;
 
       const totalCost = entries.reduce((sum, [, value]) => sum + (value?.price || 0), 0);
@@ -120,7 +120,7 @@ export function RecommendationForm() {
                 <TableRow key={key}>
                   <TableCell className="font-medium">{key}</TableCell>
                   <TableCell>{value?.name}</TableCell>
-                  <TableCell className="text-right">{formatPrice(value!.price)}</TableCell>
+                  <TableCell className="text-right">{value?.price ? formatPrice(value.price) : 'N/A'}</TableCell>
                 </TableRow>
               ))}
                <TableRow className="bg-card font-bold">
