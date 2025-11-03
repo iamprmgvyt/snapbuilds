@@ -93,20 +93,20 @@ const recommendPCConfigurationFlow = ai.defineFlow(
       tools: [convertToUSDTool],
       prompt: `You are an expert PC and laptop advisor. A user will provide their budget, intended usage, preferred form factor (desktop or laptop), and any specific requirements.
 
-  First, convert the user's budget to USD using the provided tool. All recommendations should be based on the USD budget.
+Your response MUST be a JSON object with two keys: "recommendation" and "reasoning".
 
-  Based on this information, you will recommend the best PC or laptop configuration for their needs. Explain your reasoning for the recommendation.
+1.  First, convert the user's budget to USD using the provided tool. All recommendations should be based on the USD budget.
+2.  Based on this information, you will recommend the best PC or laptop configuration for their needs.
+3.  If the recommendation is for a desktop, the value of the "recommendation" key should be a JSON object where keys are the component name (e.g., "CPU", "GPU") and values are the specific part.
+4.  If the recommendation is for a laptop, the value of the "recommendation" key should be a string containing the name of the laptop.
+5.  The "reasoning" key should contain a string explaining your recommendation.
 
-  If the recommendation is for a desktop, provide the configuration as a JSON object where keys are the component name (e.g., "CPU", "GPU") and values are the specific part.
-
-  If the recommendation is for a laptop, provide the name of the laptop as a string in the 'recommendation' field.
-
-  User Input:
-  Budget: ${input.currency} ${input.budget}
-  Intended Usage: ${input.intendedUsage}
-  Preferred Form Factor: ${input.preferredFormFactor}
-  Specific Requirements: ${input.specificRequirements || 'None'}
-  `,
+User Input:
+Budget: ${input.currency} ${input.budget}
+Intended Usage: ${input.intendedUsage}
+Preferred Form Factor: ${input.preferredFormFactor}
+Specific Requirements: ${input.specificRequirements || 'None'}
+`,
       output: {
         schema: RecommendPCConfigurationOutputSchema,
       },
